@@ -1,4 +1,6 @@
 import os
+import time
+
 import pytest
 from bria.client import Bria
 
@@ -13,7 +15,7 @@ def test_remove_background_e2e_sync():
 
     assert result.url is not None
     assert result.raw_json is not None
-    assert "status" in result.raw_json
+    assert "result" in result.raw_json
 
 @pytest.mark.skipif(API_TOKEN is None, reason="BRIA_API_TOKEN not set")
 def test_remove_background_e2e_async():
