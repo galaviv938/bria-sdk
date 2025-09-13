@@ -7,27 +7,39 @@ from .exceptions import (
     InvalidRequestError,
     ServerError,
     BriaError,
+    NotFoundError,
 )
 
+# Mapping of status codes to exception classes
+STATUS_EXCEPTIONS = {
+    401: AuthenticationError,
+    403: AuthenticationError,
+    404: NotFoundError,
+    429: RateLimitError,
+    400: InvalidRequestError,
+    415: InvalidRequestError,
+    422: InvalidRequestError,
+    460: InvalidRequestError,
+}
 
-def handle_response(response: requests.Response):
+
+def parse_response_json(response: requests.Response):
     """
-    Handle API response and raise appropriate errors or return JSON.
+    Safely parse JSON response. If fails, return minimal error dict.
     """
-
-    if response.status_code in (200, 202):
-        try:
-            return response.json()
-        except ValueError:
-            raise BriaError(f"Invalid JSON response: {response.text}")
-
     try:
-        err_json = response.json()
+        return response.json()
     except ValueError:
-        err_json = {"error": {"message": response.text}}
+        return {"error": {"message": response.text}}
 
-    message = err_json.get("error", {}).get("message", "Unknown error")
-    code = err_json.get("error", {}).get("code", "")
+
+def build_error_message(response: requests.Response, err_json: dict) -> str:
+    """
+    Construct an error message including code and request_id.
+    """
+    error_info = err_json.get("error", {})
+    message = error_info.get("message", "Unknown error")
+    code = error_info.get("code", "")
     request_id = err_json.get("request_id", "")
 
     err_msg = f"[{response.status_code}] {message}"
@@ -35,14 +47,32 @@ def handle_response(response: requests.Response):
         err_msg += f" (code {code})"
     if request_id:
         err_msg += f" | request_id: {request_id}"
+    return err_msg
 
-    if response.status_code in (401, 403):
-        raise AuthenticationError(err_msg)
-    elif response.status_code == 429:
-        raise RateLimitError(err_msg)
-    elif response.status_code in (400, 404, 415, 422, 460):
-        raise InvalidRequestError(err_msg)
-    elif 500 <= response.status_code < 600:
-        raise ServerError(err_msg)
-    else:
-        raise BriaError(err_msg)
+
+def map_status_to_exception(response: requests.Response) -> type[Exception]:
+    """
+    Map HTTP status code to the appropriate exception class.
+    """
+    if 500 <= response.status_code < 600:
+        return ServerError
+    return STATUS_EXCEPTIONS.get(response.status_code, BriaError)
+
+
+def handle_response(response: requests.Response):
+    """
+    Main function: return JSON on success or raise appropriate exception.
+    """
+    # Success
+    if response.status_code in (200, 202):
+        try:
+            return response.json()
+        except ValueError:
+            raise BriaError(f"Invalid JSON response: {response.text}")
+
+    # Parse error response
+    err_json = parse_response_json(response)
+    err_msg = build_error_message(response, err_json)
+    exc_class = map_status_to_exception(response)
+
+    raise exc_class(err_msg)

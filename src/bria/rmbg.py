@@ -17,6 +17,10 @@ class Rmbg:
         if not api_token:
             raise ValueError("API token is required")
         self.api_token = api_token
+        self.headers = {
+            "api_token": self.api_token,
+            "Content-Type": "application/json",
+        }
 
     def remove_background(
         self,
@@ -30,11 +34,6 @@ class Rmbg:
         Remove the background of an image, via Bria's Remove Background API.
         """
 
-        headers = {
-            "api_token": self.api_token,
-            "Content-Type": "application/json",
-        }
-
         payload: Dict[str, Any] = {
             "image": image,
             "preserve_alpha": preserve_alpha,
@@ -43,6 +42,6 @@ class Rmbg:
             "visual_output_content_moderation": visual_output_content_moderation,
         }
 
-        resp = requests.post(REMOVE_BACKGROUND_ENDPOINT, headers=headers, json=payload)
+        resp = requests.post(REMOVE_BACKGROUND_ENDPOINT, headers=self.headers, json=payload)
         return handle_response(resp)
 

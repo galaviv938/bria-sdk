@@ -11,6 +11,7 @@ class StatusService:
         if not api_token:
             raise ValueError("API token is required")
         self.api_token = api_token
+        self.headers = {"api_token": self.api_token}
 
     def get_status(self, request_id: str) -> Dict[str, Any]:
         """
@@ -24,26 +25,6 @@ class StatusService:
             raise ValueError("request_id must be provided")
 
         url = STATUS_ENDPOINT_TEMPLATE.format(request_id=request_id)
-        headers = {
-            "api_token": self.api_token,
-        }
-        resp = requests.get(url, headers=headers)
+        resp = requests.get(url, headers=self.headers)
 
-        # If 404, map to NotFoundError
-        if resp.status_code == 404:
-            # Try to get JSON to show message
-            try:
-                err = resp.json()
-                msg = err.get("error", {}).get("message", resp.text)
-            except ValueError:
-                msg = resp.text
-            raise NotFoundError(f"Request ID {request_id} not found: {msg}")
-
-        # If other than 200, handle generically
-        if resp.status_code != 200:
-            # Use handle_response but note handle_response may raise other error types
-            return handle_response(resp)  # or you may want more specific mapping
-
-        # status is 200 => check JSON
-        data = resp.json()
-        return data
+        return handle_response(resp)
