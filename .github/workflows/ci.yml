@@ -32,7 +32,7 @@ jobs:
         run: uv pip install -r pyproject.toml
 
       - name: Run tests with coverage
-        run: pytest --cov=bria --cov-report=term-missing --maxfail=1 --disable-warnings -q
+        run: uv run pytest --cov=bria --cov-report=term-missing --maxfail=1 --disable-warnings -q
 
   publish:
     name: Build & Publish to PyPI
