@@ -67,15 +67,12 @@ class Rmbg:
         return requests.post(REMOVE_BACKGROUND_ENDPOINT, headers=self.headers, json=payload)
 
     def _build_result(self, data: Dict[str, Any], is_sync: bool) -> RemoveBackgroundResult:
+        url = data.get(STATUS_URL_KEY)
         if is_sync:
-            return RemoveBackgroundResult(
-                raw_json=data,
-                url=data.get(RESULT_KEY, {}).get(IMAGE_URL_KEY),
-                request_id=data.get(STATUS_KEY),
-            )
+            url = data.get(RESULT_KEY, {}).get(IMAGE_URL_KEY),
         return RemoveBackgroundResult(
-            raw_json=data,
-            url=data.get(STATUS_URL_KEY),
-            request_id=data.get(REQUEST_ID_KEY),
+            raw_json= data,
+            url= url,
+            request_id= data.get(REQUEST_ID_KEY),
         )
 

@@ -1,11 +1,17 @@
-# tests/test_rmbg.py
-
 import requests_mock
 import pytest
 
 from bria.client import Bria
-from bria.constants import REMOVE_BACKGROUND_ENDPOINT
+from bria.constants import (
+    REMOVE_BACKGROUND_ENDPOINT,
+    RESULT_KEY,
+    IMAGE_URL_KEY,
+    STATUS_KEY,
+    REQUEST_ID_KEY,
+    STATUS_URL_KEY,
+)
 from bria.exceptions import InvalidRequestError
+from bria.models import RemoveBackgroundResult
 
 
 def test_remove_background_sync_success():
@@ -15,15 +21,18 @@ def test_remove_background_sync_success():
         m.post(
             REMOVE_BACKGROUND_ENDPOINT,
             json={
-                "status": "COMPLETED",
-                "result": {"image_url": "https://example.com/output.png"},
+                STATUS_KEY: "COMPLETED",
+                RESULT_KEY: {IMAGE_URL_KEY: "https://example.com/output.png"},
             },
             status_code=200,
         )
 
         resp = client.rmbg.remove_background("https://example.com/input.png", sync=True)
-        assert resp["status"] == "COMPLETED"
-        assert resp["result"]["image_url"].endswith("output.png")
+
+        assert isinstance(resp, RemoveBackgroundResult)
+        assert resp.url == "https://example.com/output.png"
+        assert resp.request_id is None
+        assert resp.raw_json[STATUS_KEY] == "COMPLETED"
 
 
 def test_remove_background_async_inprogress():
@@ -33,17 +42,32 @@ def test_remove_background_async_inprogress():
         m.post(
             REMOVE_BACKGROUND_ENDPOINT,
             json={
-                "status": "IN_PROGRESS",
-                "request_id": "req123",
-                "status_url": "https://engine.prod.bria-api.com/v2/status/req123",
+                STATUS_KEY: "IN_PROGRESS",
+                REQUEST_ID_KEY: "req123",
+                STATUS_URL_KEY: "https://engine.prod.bria-api.com/v2/status/req123",
             },
             status_code=200,
         )
 
         resp = client.rmbg.remove_background("https://example.com/input.png", sync=False)
-        assert resp["status"] == "IN_PROGRESS"
-        assert resp["request_id"] == "req123"
+
+        assert isinstance(resp, RemoveBackgroundResult)
+        assert resp.url == "https://engine.prod.bria-api.com/v2/status/req123"
+        assert resp.request_id == "req123"
+        assert resp.raw_json[STATUS_KEY] == "IN_PROGRESS"
 
 
 def test_remove_background_invalid_request():
     client = Bria(api_token="fake_token")
+
+    with requests_mock.Mocker() as m:
+        m.post(
+            REMOVE_BACKGROUND_ENDPOINT,
+            json={"error": {"message": "Invalid image format"}},
+            status_code=400,
+        )
+
+        with pytest.raises(InvalidRequestError) as exc:
+            client.rmbg.remove_background("bad_input.png")
+
+        assert "Invalid image format" in str(exc.value)

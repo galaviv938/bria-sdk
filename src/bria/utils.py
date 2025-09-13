@@ -1,5 +1,3 @@
-# bria/utils.py
-
 import requests
 from src.bria.exceptions import (
     AuthenticationError,
@@ -10,7 +8,6 @@ from src.bria.exceptions import (
     NotFoundError,
 )
 
-# Mapping of status codes to exception classes
 STATUS_EXCEPTIONS = {
     401: AuthenticationError,
     403: AuthenticationError,
@@ -70,7 +67,6 @@ def handle_response(response: requests.Response):
         except ValueError:
             raise BriaError(f"Invalid JSON response: {response.text}")
 
-    # Parse error response
     err_json = parse_response_json(response)
     err_msg = build_error_message(response, err_json)
     exc_class = map_status_to_exception(response)
