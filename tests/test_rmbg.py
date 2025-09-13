@@ -1,8 +1,8 @@
 import requests_mock
 import pytest
 
-from bria.client import Bria
-from bria.constants import (
+from src.bria.client import Bria
+from src.bria.constants import (
     REMOVE_BACKGROUND_ENDPOINT,
     RESULT_KEY,
     IMAGE_URL_KEY,
@@ -10,8 +10,8 @@ from bria.constants import (
     REQUEST_ID_KEY,
     STATUS_URL_KEY,
 )
-from bria.exceptions import InvalidRequestError
-from bria.models import RemoveBackgroundResult
+from src.bria.exceptions import InvalidRequestError
+from src.bria.models import RemoveBackgroundResult
 
 
 def test_remove_background_sync_success():
