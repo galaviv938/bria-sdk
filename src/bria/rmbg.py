@@ -45,3 +45,4 @@ class Rmbg:
 
         resp = requests.post(REMOVE_BACKGROUND_ENDPOINT, headers=headers, json=payload)
         return handle_response(resp)
+
