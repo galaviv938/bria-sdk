@@ -32,6 +32,8 @@ jobs:
         run: uv pip install -r pyproject.toml
 
       - name: Run tests with coverage
+        env:
+          BRIA_API_TOKEN: ${{ secrets.BRIA_API_TOKEN }}
         run: uv run pytest --cov=bria --cov-report=term-missing --maxfail=1 --disable-warnings -q
 
   publish:

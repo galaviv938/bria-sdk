@@ -1,6 +1,7 @@
 import requests
 from typing import Dict, Any
 
+from bria.exceptions import BriaError
 from bria.models import StatusResult, StatusErrorResult, StatusSuccessResult
 from src.bria.constants import STATUS_ENDPOINT_TEMPLATE, RESULT_KEY, IMAGE_URL_KEY, STATUS_KEY, REQUEST_ID_KEY, \
     ERROR_KEY, SEED_KEY, PROMPT_KEY, REFINED_PROMPT_KEY
@@ -26,8 +27,10 @@ class StatusService:
 
         url = STATUS_ENDPOINT_TEMPLATE.format(request_id=request_id)
         resp = requests.get(url, headers=self.headers)
-
-        data = handle_response(resp)
+        try:
+            data = handle_response(resp)
+        except BriaError as e:
+            raise e
         return self._build_result(data)
 
     def _build_result(self, data: Dict[str, Any]) -> StatusResult:
@@ -36,7 +39,7 @@ class StatusService:
             "request_id": lambda d: d.get(REQUEST_ID_KEY),
         }
         status_class = StatusSuccessResult
-        if data.get(STATUS_KEY) == ERROR_KEY:
+        if data.get(STATUS_KEY).lower() == ERROR_KEY:
             status_class = StatusErrorResult
             field_map[ERROR_KEY] = lambda d: d.get(ERROR_KEY)
         else:

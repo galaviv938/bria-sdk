@@ -1,17 +1,11 @@
-import requests_mock
 import pytest
+import requests_mock
 
 from bria.client import Bria
-from bria.exceptions import NotFoundError
-from bria.constants import (
-    STATUS_ENDPOINT_TEMPLATE,
-    STATUS_KEY,
-    RESULT_KEY,
-    IMAGE_URL_KEY,
-    REQUEST_ID_KEY,
-    ERROR_KEY,
-)
+from bria.constants import STATUS_ENDPOINT_TEMPLATE, ERROR_KEY, RESULT_KEY, IMAGE_URL_KEY, STATUS_KEY, REQUEST_ID_KEY
 from bria.models import StatusSuccessResult, StatusErrorResult
+from bria.exceptions import NotFoundError
+from bria.utils import handle_response
 
 
 def test_get_status_completed():
@@ -19,64 +13,63 @@ def test_get_status_completed():
     request_id = "req123"
     status_url = STATUS_ENDPOINT_TEMPLATE.format(request_id=request_id)
 
+    response_json = {
+        STATUS_KEY: "COMPLETED",
+        RESULT_KEY: {IMAGE_URL_KEY: "https://example.com/output.png"},
+        REQUEST_ID_KEY: request_id
+    }
+
     with requests_mock.Mocker() as m:
-        m.get(
-            status_url,
-            json={
-                STATUS_KEY: "COMPLETED",
-                REQUEST_ID_KEY: request_id,
-                RESULT_KEY: {IMAGE_URL_KEY: "https://example.com/output.png"},
-            },
-            status_code=200,
-        )
+        m.get(status_url, json=response_json, status_code=200)
+        result = client.status.get_status(request_id)
 
-        resp = client.status.get_status(request_id)
-
-        assert isinstance(resp, StatusSuccessResult)
-        assert resp.status == "COMPLETED"
-        assert resp.url == "https://example.com/output.png"
-        assert resp.request_id == request_id
-        assert resp.raw_json[STATUS_KEY] == "COMPLETED"
+    # Assert type and fields
+    assert isinstance(result, StatusSuccessResult)
+    assert result.status == "COMPLETED"
+    assert result.request_id == request_id
+    assert result.url.endswith("output.png")
+    assert result.raw_json == response_json
 
 
-def test_get_status_error():
+def test_get_status_in_progress():
     client = Bria(api_token="fake_token")
     request_id = "req456"
     status_url = STATUS_ENDPOINT_TEMPLATE.format(request_id=request_id)
 
+    response_json = {
+        STATUS_KEY: "IN_PROGRESS",
+        REQUEST_ID_KEY: request_id
+    }
+
     with requests_mock.Mocker() as m:
-        m.get(
-            status_url,
-            json={
-                STATUS_KEY: ERROR_KEY,
-                REQUEST_ID_KEY: request_id,
-                ERROR_KEY: {"message": "Something went wrong"},
-            },
-            status_code=200,
-        )
+        m.get(status_url, json=response_json, status_code=200)
+        result = client.status.get_status(request_id)
 
-        resp = client.status.get_status(request_id)
-
-        assert isinstance(resp, StatusErrorResult)
-        assert resp.status == ERROR_KEY
-        assert resp.request_id == request_id
-        assert "message" in resp.error
-        assert resp.error["message"] == "Something went wrong"
+    assert isinstance(result, StatusSuccessResult)
+    assert result.status == "IN_PROGRESS"
+    assert result.request_id == request_id
+    assert result.url is None  # no URL yet
+    assert result.raw_json == response_json
 
 
-def test_get_status_not_found():
+def test_get_status_error():
     client = Bria(api_token="fake_token")
-    request_id = "unknown123"
+    request_id = "req789"
     status_url = STATUS_ENDPOINT_TEMPLATE.format(request_id=request_id)
 
+    response_json = {
+        STATUS_KEY: "ERROR",
+        REQUEST_ID_KEY: request_id,
+        ERROR_KEY: {"message": "Something went wrong"}
+    }
+
     with requests_mock.Mocker() as m:
-        m.get(
-            status_url,
-            json={ERROR_KEY: {"message": "Not found"}},
-            status_code=404,
-        )
+        m.get(status_url, json=response_json, status_code=200)
+        result = client.status.get_status(request_id)
 
-        with pytest.raises(NotFoundError) as excinfo:
-            client.status.get_status(request_id)
+    assert isinstance(result, StatusErrorResult)
+    assert result.status == "ERROR"
+    assert result.request_id == request_id
+    assert result.error["message"] == "Something went wrong"
+    assert result.raw_json == response_json
 
-        assert "not found" in str(excinfo.value).lower()

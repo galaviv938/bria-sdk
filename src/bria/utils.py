@@ -9,13 +9,13 @@ from src.bria.exceptions import (
 )
 
 STATUS_EXCEPTIONS = {
+    400: InvalidRequestError,
     401: AuthenticationError,
     403: AuthenticationError,
     404: NotFoundError,
-    429: RateLimitError,
-    400: InvalidRequestError,
     415: InvalidRequestError,
     422: InvalidRequestError,
+    429: RateLimitError,
     460: InvalidRequestError,
 }
 

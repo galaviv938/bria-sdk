@@ -3,17 +3,17 @@ from typing import Dict, Any, Optional
 
 @dataclass
 class BaseResult:
-    raw_json: Dict[str, Any]
+    raw_json: Dict[str, Any] = None
 
 @dataclass
 class RemoveBackgroundResult(BaseResult):
-    url: Optional[str]
-    request_id: Optional[str]
+    url: Optional[str] = None
+    request_id: Optional[str] = None
 
 @dataclass
 class StatusResult(BaseResult):
-    status: Optional[str]
-    request_id: Optional[str]
+    status: Optional[str] = None
+    request_id: Optional[str] = None
 
 @dataclass
 class StatusSuccessResult(StatusResult):
