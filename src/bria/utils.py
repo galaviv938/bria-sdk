@@ -1,7 +1,7 @@
 # bria/utils.py
 
 import requests
-from .exceptions import (
+from src.bria.exceptions import (
     AuthenticationError,
     RateLimitError,
     InvalidRequestError,

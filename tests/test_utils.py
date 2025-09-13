@@ -1,15 +1,11 @@
-# tests/test_utils.py
-
 import pytest
-import requests
-from types import SimpleNamespace
-from bria.utils import (
+from src.bria.utils import (
     parse_response_json,
     build_error_message,
     map_status_to_exception,
     handle_response,
 )
-from bria.exceptions import (
+from src.bria.exceptions import (
     AuthenticationError,
     RateLimitError,
     InvalidRequestError,

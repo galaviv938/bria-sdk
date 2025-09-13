@@ -1,5 +1,3 @@
-# bria/exceptions.py
-
 class BriaError(Exception):
     """Base class for all Bria SDK exceptions."""
     pass

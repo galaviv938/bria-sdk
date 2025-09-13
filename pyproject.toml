@@ -7,7 +7,9 @@ requires-python = ">=3.9"
 dependencies = [
     "requests>=2.32.5",
     "pytest",
-    "requests-mock"
+    "requests-mock",
+    "setuptools>=80.9.0",
+    "wheel>=0.45.1",
 ]
 
 [build-system]
