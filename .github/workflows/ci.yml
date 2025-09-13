@@ -37,7 +37,7 @@ jobs:
   publish:
     name: Build & Publish to PyPI
     runs-on: ubuntu-latest
-    needs: test   # ensures tests pass before attempting to publish
+    needs: test
     if: github.event_name == 'release'
 
     steps:
