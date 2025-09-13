@@ -1,8 +1,8 @@
 # tests/test_client.py
 
-from bria.client import Bria
-from bria.rmbg import Rmbg
-from bria.status import StatusService
+from src.bria.client import Bria
+from src.bria.rmbg import Rmbg
+from src.bria.status import StatusService
 
 
 def test_client_initialization():
