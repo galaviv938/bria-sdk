@@ -39,10 +39,7 @@ def test_parse_response_json_invalid():
 
 def test_build_error_message_with_all_fields():
     resp = DummyResponse(400)
-    err_json = {
-        "error": {"message": "fail", "code": "123"},
-        "request_id": "req_1"
-    }
+    err_json = {"error": {"message": "fail", "code": "123"}, "request_id": "req_1"}
     msg = build_error_message(resp, err_json)
     assert "[400] fail" in msg
     assert "code 123" in msg
@@ -56,19 +53,22 @@ def test_build_error_message_minimal():
     assert "[400] Unknown error" in msg
 
 
-@pytest.mark.parametrize("status,exc", [
-    (401, AuthenticationError),
-    (403, AuthenticationError),
-    (404, NotFoundError),
-    (429, RateLimitError),
-    (400, InvalidRequestError),
-    (415, InvalidRequestError),
-    (422, InvalidRequestError),
-    (460, InvalidRequestError),
-    (500, ServerError),
-    (502, ServerError),
-    (999, BriaError),
-])
+@pytest.mark.parametrize(
+    "status,exc",
+    [
+        (401, AuthenticationError),
+        (403, AuthenticationError),
+        (404, NotFoundError),
+        (429, RateLimitError),
+        (400, InvalidRequestError),
+        (415, InvalidRequestError),
+        (422, InvalidRequestError),
+        (460, InvalidRequestError),
+        (500, ServerError),
+        (502, ServerError),
+        (999, BriaError),
+    ],
+)
 def test_map_status_to_exception(status, exc):
     resp = DummyResponse(status)
     assert map_status_to_exception(resp) == exc
@@ -92,21 +92,26 @@ def test_handle_response_invalid_json_raises_briaerror():
         handle_response(resp)
 
 
-@pytest.mark.parametrize("status,exc", [
-    (401, AuthenticationError),
-    (403, AuthenticationError),
-    (404, NotFoundError),
-    (429, RateLimitError),
-    (400, InvalidRequestError),
-    (415, InvalidRequestError),
-    (422, InvalidRequestError),
-    (460, InvalidRequestError),
-    (500, ServerError),
-    (502, ServerError),
-    (999, BriaError),
-])
+@pytest.mark.parametrize(
+    "status,exc",
+    [
+        (401, AuthenticationError),
+        (403, AuthenticationError),
+        (404, NotFoundError),
+        (429, RateLimitError),
+        (400, InvalidRequestError),
+        (415, InvalidRequestError),
+        (422, InvalidRequestError),
+        (460, InvalidRequestError),
+        (500, ServerError),
+        (502, ServerError),
+        (999, BriaError),
+    ],
+)
 def test_handle_response_raises(status, exc):
-    resp = DummyResponse(status, json_data={"error": {"message": "fail"}, "request_id": "req_1"})
+    resp = DummyResponse(
+        status, json_data={"error": {"message": "fail"}, "request_id": "req_1"}
+    )
     with pytest.raises(exc) as e:
         handle_response(resp)
     assert "fail" in str(e.value)

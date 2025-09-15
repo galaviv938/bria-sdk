@@ -2,11 +2,21 @@ import requests
 from typing import Dict, Any
 import logging
 from bria.models import StatusResult, StatusErrorResult, StatusSuccessResult
-from src.bria.constants import RESULT_KEY, IMAGE_URL_KEY, STATUS_KEY, REQUEST_ID_KEY, \
-    ERROR_KEY, SEED_KEY, PROMPT_KEY, REFINED_PROMPT_KEY, BASE_URL
+from src.bria.constants import (
+    RESULT_KEY,
+    IMAGE_URL_KEY,
+    STATUS_KEY,
+    REQUEST_ID_KEY,
+    ERROR_KEY,
+    SEED_KEY,
+    PROMPT_KEY,
+    REFINED_PROMPT_KEY,
+    BASE_URL,
+)
 from src.bria.utils import handle_response
 
 logger = logging.getLogger(__name__)
+
 
 class StatusService:
     def __init__(self, api_token: str):
@@ -39,12 +49,16 @@ class StatusService:
             status_class = StatusErrorResult
             field_map[ERROR_KEY] = data.get(ERROR_KEY)
         else:
-            field_map.update({
-                "url": data.get(RESULT_KEY, {}).get(IMAGE_URL_KEY),
-                "seed": data.get(SEED_KEY),
-                "prompt": data.get(PROMPT_KEY),
-                "refined_prompt": data.get(REFINED_PROMPT_KEY),
-            })
-        filtered_fields = {key: value for key, value in field_map.items() if value is not None}
+            field_map.update(
+                {
+                    "url": data.get(RESULT_KEY, {}).get(IMAGE_URL_KEY),
+                    "seed": data.get(SEED_KEY),
+                    "prompt": data.get(PROMPT_KEY),
+                    "refined_prompt": data.get(REFINED_PROMPT_KEY),
+                }
+            )
+        filtered_fields = {
+            key: value for key, value in field_map.items() if value is not None
+        }
         filtered_fields["raw_json"] = data
         return status_class(**filtered_fields)

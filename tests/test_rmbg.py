@@ -27,7 +27,7 @@ def test_remove_background_sync_success():
             status_code=200,
         )
 
-        resp = client.rmbg.remove_background("https://example.com/input.png", sync=True)
+        resp = client.edit.remove_background("https://example.com/input.png", sync=True)
 
         assert isinstance(resp, RemoveBackgroundResult)
         assert resp.url == "https://example.com/output.png"
@@ -49,7 +49,9 @@ def test_remove_background_async_inprogress():
             status_code=200,
         )
 
-        resp = client.rmbg.remove_background("https://example.com/input.png", sync=False)
+        resp = client.edit.remove_background(
+            "https://example.com/input.png", sync=False
+        )
 
         assert isinstance(resp, RemoveBackgroundResult)
         assert resp.url == "https://engine.prod.bria-api.com/v2/status/req123"
@@ -68,6 +70,6 @@ def test_remove_background_invalid_request():
         )
 
         with pytest.raises(InvalidRequestError) as exc:
-            client.rmbg.remove_background("bad_input.png")
+            client.edit.remove_background("bad_input.png")
 
         assert "Invalid image format" in str(exc.value)

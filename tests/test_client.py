@@ -5,5 +5,5 @@ from src.bria.status import StatusService
 
 def test_client_initialization():
     client = Bria(api_token="fake_token")
-    assert isinstance(client.rmbg, Edit)
+    assert isinstance(client.edit, Edit)
     assert isinstance(client.status, StatusService)

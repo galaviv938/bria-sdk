@@ -50,7 +50,7 @@ from bria.client import Bria
 
 client = Bria(api_token="your_api_token_here")
 
-result = client.rmbg.remove_background(
+result = client.edit.remove_background(
     "https://example.com/image.png",
     sync=True
 )
@@ -70,7 +70,7 @@ from bria.client import Bria
 client = Bria(api_token="your_api_token_here")
 
 # Submit async job
-job = client.rmbg.remove_background(
+job = client.edit.remove_background(
     "https://example.com/image.png",
     sync=False
 )

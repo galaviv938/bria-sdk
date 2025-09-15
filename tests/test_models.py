@@ -1,9 +1,8 @@
-import pytest
 from bria.models import (
     BaseResult,
     StatusResult,
     StatusSuccessResult,
-    StatusErrorResult,
+    StatusErrorResult, EditAsyncResult,
 )
 from bria.constants import (
     STATUS_KEY,
@@ -18,9 +17,9 @@ from bria.constants import (
 
 
 def test_base_result_stores_raw_json():
-    raw = {"foo": "bar"}
-    result = BaseResult(raw_json=raw)
-    assert result.raw_json == raw
+    raw = {"request_id": "12345"}
+    result = BaseResult(**raw)
+    assert result.request_id == raw
 
 
 def test_remove_background_result_fields():
@@ -28,14 +27,12 @@ def test_remove_background_result_fields():
         RESULT_KEY: {IMAGE_URL_KEY: "http://image.png"},
         REQUEST_ID_KEY: "123",
     }
-    result = RemoveBackgroundResult(
-        raw_json=raw,
+    result = EditAsyncResult(
         url=raw[RESULT_KEY][IMAGE_URL_KEY],
         request_id=raw[REQUEST_ID_KEY],
     )
     assert result.url == "http://image.png"
     assert result.request_id == "123"
-    assert result.raw_json == raw
 
 
 def test_status_result_fields():
@@ -44,7 +41,6 @@ def test_status_result_fields():
         REQUEST_ID_KEY: "abc123",
     }
     result = StatusResult(
-        raw_json=raw,
         status=raw[STATUS_KEY],
         request_id=raw[REQUEST_ID_KEY],
     )
@@ -62,7 +58,6 @@ def test_status_success_result_fields():
         REFINED_PROMPT_KEY: "a cute cat",
     }
     result = StatusSuccessResult(
-        raw_json=raw,
         status=raw[STATUS_KEY],
         request_id=raw[REQUEST_ID_KEY],
         url=raw[RESULT_KEY][IMAGE_URL_KEY],
@@ -84,7 +79,6 @@ def test_status_error_result_fields():
         ERROR_KEY: {"message": "something went wrong"},
     }
     result = StatusErrorResult(
-        raw_json=raw,
         status=raw[STATUS_KEY],
         request_id=raw[REQUEST_ID_KEY],
         error=raw[ERROR_KEY],

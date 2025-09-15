@@ -1,4 +1,3 @@
-
 BASE_URL = "https://engine.prod.bria-api.com/v2"
 
 # Default values
@@ -7,8 +6,8 @@ DEFAULT_SYNC = False
 DEFAULT_INPUT_MODERATION = False
 DEFAULT_OUTPUT_MODERATION = False
 
-EDIT = 'edit'
-REMOVE_BACKGROUND = 'remove-background'
+EDIT = "edit"
+REMOVE_BACKGROUND = "remove-background"
 
 
 # Payload keys

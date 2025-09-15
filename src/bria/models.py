@@ -1,21 +1,26 @@
 from dataclasses import dataclass
 from typing import Dict, Any, Optional
 
+
 @dataclass
 class BaseResult:
     request_id: Optional[str] = None
+
 
 @dataclass
 class EditSyncResult(BaseResult):
     url: Optional[str] = None
 
+
 @dataclass
 class EditAsyncResult(BaseResult):
     url: Optional[str] = None
 
+
 @dataclass
 class StatusResult(BaseResult):
     status: Optional[str] = None
+
 
 @dataclass
 class StatusSuccessResult(StatusResult):
