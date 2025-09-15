@@ -7,7 +7,7 @@ DEFAULT_INPUT_MODERATION = False
 DEFAULT_OUTPUT_MODERATION = False
 
 EDIT = "edit"
-REMOVE_BACKGROUND = "remove-background"
+REMOVE_BACKGROUND = "remove_background"
 
 
 # Payload keys
