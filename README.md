@@ -1,6 +1,6 @@
 # Bria Python SDK
 
-A lightweight Python SDK for the [Bria API](https://bria.ai).  
+A lightweight Python SDK for the [Bria API V2](https://bria.ai).  
 It provides simple methods to remove image backgrounds, check job statuses, and handle API responses.
 
 ---
@@ -170,4 +170,5 @@ uv run pytest --cov=bria --cov-report=term-missing
 ## License
 
 MIT – see [LICENSE](LICENSE) for details.
+
 
