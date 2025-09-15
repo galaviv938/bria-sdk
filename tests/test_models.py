@@ -2,7 +2,8 @@ from bria.models import (
     BaseResult,
     StatusResult,
     StatusSuccessResult,
-    StatusErrorResult, EditAsyncResult,
+    StatusErrorResult,
+    EditAsyncResult,
 )
 from bria.constants import (
     STATUS_KEY,
