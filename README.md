@@ -56,7 +56,6 @@ result = client.edit.remove_background(
 )
 
 print("Processed image:", result.url)
-print("Full response:", result.raw_json)
 ```
 
 ---
@@ -171,3 +170,4 @@ uv run pytest --cov=bria --cov-report=term-missing
 ## License
 
 MIT – see [LICENSE](LICENSE) for details.
+
