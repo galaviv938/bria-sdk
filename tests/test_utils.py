@@ -16,7 +16,6 @@ from src.bria.exceptions import (
 
 
 class DummyResponse:
-    """Mock requests.Response for testing."""
     def __init__(self, status_code, json_data=None, text=""):
         self.status_code = status_code
         self._json = json_data

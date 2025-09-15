@@ -3,17 +3,19 @@ from typing import Dict, Any, Optional
 
 @dataclass
 class BaseResult:
-    raw_json: Dict[str, Any] = None
+    request_id: Optional[str] = None
 
 @dataclass
-class RemoveBackgroundResult(BaseResult):
+class EditSyncResult(BaseResult):
     url: Optional[str] = None
-    request_id: Optional[str] = None
+
+@dataclass
+class EditAsyncResult(BaseResult):
+    url: Optional[str] = None
 
 @dataclass
 class StatusResult(BaseResult):
     status: Optional[str] = None
-    request_id: Optional[str] = None
 
 @dataclass
 class StatusSuccessResult(StatusResult):

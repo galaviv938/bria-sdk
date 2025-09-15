@@ -21,9 +21,6 @@ STATUS_EXCEPTIONS = {
 
 
 def parse_response_json(response: requests.Response):
-    """
-    Safely parse JSON response. If fails, return minimal error dict.
-    """
     try:
         return response.json()
     except ValueError:
@@ -31,9 +28,6 @@ def parse_response_json(response: requests.Response):
 
 
 def build_error_message(response: requests.Response, err_json: dict) -> str:
-    """
-    Construct an error message including code and request_id.
-    """
     error_info = err_json.get("error", {})
     message = error_info.get("message", "Unknown error")
     code = error_info.get("code", "")
@@ -48,19 +42,12 @@ def build_error_message(response: requests.Response, err_json: dict) -> str:
 
 
 def map_status_to_exception(response: requests.Response) -> type[Exception]:
-    """
-    Map HTTP status code to the appropriate exception class.
-    """
     if 500 <= response.status_code < 600:
         return ServerError
     return STATUS_EXCEPTIONS.get(response.status_code, BriaError)
 
 
 def handle_response(response: requests.Response):
-    """
-    Main function: return JSON on success or raise appropriate exception.
-    """
-    # Success
     if response.status_code in (200, 202):
         try:
             return response.json()

@@ -1,7 +1,6 @@
 import pytest
 from bria.models import (
     BaseResult,
-    RemoveBackgroundResult,
     StatusResult,
     StatusSuccessResult,
     StatusErrorResult,
