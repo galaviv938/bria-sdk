@@ -1,7 +1,7 @@
 import requests_mock
 import pytest
 
-from bria.models import EditSyncResult, EditAsyncResult
+from src.bria.models import EditSyncResult, EditAsyncResult
 from src.bria.client import Bria
 from src.bria.constants import (
     RESULT_KEY,
@@ -15,10 +15,10 @@ from src.bria.exceptions import InvalidRequestError
 
 def test_remove_background_sync_success():
     client = Bria(api_token="fake_token")
-
+    url = f"{client.edit.edit_base_url}/remove_background"
     with requests_mock.Mocker() as m:
         m.post(
-            url= f"{client.edit.image_base_url}/{REMOVE_BACKGROUND}",
+            url= f"{client.edit.edit_base_url}/remove_background",
             json={
                 STATUS_KEY: "COMPLETED",
                 RESULT_KEY: {IMAGE_URL_KEY: "https://example.com/output.png"},
@@ -28,7 +28,7 @@ def test_remove_background_sync_success():
 
         resp = client.edit.remove_background("https://example.com/input.png", sync=True)
 
-        assert isinstance(resp, EditAsyncResult)
+        assert isinstance(resp, EditSyncResult)
         assert resp.url == "https://example.com/output.png"
         assert resp.request_id is None
 
@@ -37,7 +37,7 @@ def test_remove_background_async_inprogress():
 
     with requests_mock.Mocker() as m:
         m.post(
-            url= f"{client.edit.image_base_url}/{REMOVE_BACKGROUND}",
+            url= f"{client.edit.edit_base_url}/remove_background",
             json={
                 STATUS_KEY: "IN_PROGRESS",
                 REQUEST_ID_KEY: "req123",
@@ -60,7 +60,7 @@ def test_remove_background_invalid_request():
 
     with requests_mock.Mocker() as m:
         m.post(
-            url= f"{client.edit.image_base_url}/{REMOVE_BACKGROUND}",
+            url= f"{client.edit.edit_base_url}/{REMOVE_BACKGROUND}",
             json={"error": {"message": "Invalid image format"}},
             status_code=400,
         )
