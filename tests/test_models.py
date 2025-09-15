@@ -17,7 +17,7 @@ from bria.constants import (
 )
 
 
-def test_base_result_stores_raw_json():
+def test_base_result_stores_request_id():
     raw = {"request_id": "12345"}
     result = BaseResult(**raw)
     assert result.request_id == raw

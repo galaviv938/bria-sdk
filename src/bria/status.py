@@ -60,5 +60,4 @@ class StatusService:
         filtered_fields = {
             key: value for key, value in field_map.items() if value is not None
         }
-        filtered_fields["raw_json"] = data
         return status_class(**filtered_fields)
