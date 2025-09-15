@@ -14,7 +14,7 @@ from bria.models import StatusSuccessResult, StatusErrorResult
 def test_get_status_completed():
     client = Bria(api_token="fake_token")
     request_id = "req123"
-    status_url = client.status.url(request_id=request_id)
+    status_url = f"{client.status.url}/{request_id}"
 
     response_json = {
         STATUS_KEY: "COMPLETED",
@@ -36,7 +36,7 @@ def test_get_status_completed():
 def test_get_status_in_progress():
     client = Bria(api_token="fake_token")
     request_id = "req456"
-    status_url = client.status.url(request_id=request_id)
+    status_url = f"{client.status.url}/{request_id}"
 
     response_json = {STATUS_KEY: "IN_PROGRESS", REQUEST_ID_KEY: request_id}
 
@@ -53,7 +53,7 @@ def test_get_status_in_progress():
 def test_get_status_error():
     client = Bria(api_token="fake_token")
     request_id = "req789"
-    status_url = client.status.url(request_id=request_id)
+    status_url = f"{client.status.url}/{request_id}"
 
     response_json = {
         STATUS_KEY: "ERROR",
